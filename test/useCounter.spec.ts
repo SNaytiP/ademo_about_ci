@@ -1,27 +1,42 @@
-import { renderHook, act } from '@testing-library/react';
-import useCounter from '../src/hooks/features/homepage/useCounter';
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import useCounter from "../src/hooks/features/homepage/useCounter";
 
-describe('useCounter', () => {
-  it('should initialize count to 0 and val to 1', () => {
+describe("useCounter hook", () => {
+  it("returns initial count as 0 and val as 1", () => {
     const { result } = renderHook(() => useCounter());
-    expect(result.current.count).toBe(0);
-    expect(result.current.val).toBe(1);
+    expect(result.current.count).toEqual(0);
+    expect(result.current.val).toEqual(1);
   });
 
-  it('should increment count by val', () => {
+  it("increments count by val", () => {
     const { result } = renderHook(() => useCounter());
-    act(() => {
-      result.current.increment();
-    });
-    expect(result.current.count).toBe(1);
+    act(() => result.current.increment());
+    expect(result.current.count).toEqual(1);
   });
 
-  it('should increment count by updated val', () => {
+  it("updates val and increments count accordingly", () => {
     const { result } = renderHook(() => useCounter());
+    act(() => result.current.setVal(4));
+    act(() => result.current.increment());
+    expect(result.current.count).toEqual(4);
+  });
+
+  it("increments count multiple times with custom val", () => {
+    const { result } = renderHook(() => useCounter());
+    act(() => result.current.setVal(2));
     act(() => {
-      result.current.setVal(5);
+      result.current.increment();
+      result.current.increment();
       result.current.increment();
     });
-    expect(result.current.count).toBe(5);
+    expect(result.current.count).toEqual(6); // 2 + 2 + 2
+  });
+
+  it("handles decrementing with negative val", () => {
+    const { result } = renderHook(() => useCounter());
+    act(() => result.current.setVal(-3));
+    act(() => result.current.increment());
+    expect(result.current.count).toEqual(-3);
   });
 });
